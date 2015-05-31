@@ -1,17 +1,17 @@
 package de.hsweingarten.dapro.view.overview;
 
 import de.hsweingarten.dapro.application.translations.ITranslationProvider;
+import de.hsweingarten.dapro.exceptions.ModelSelectionException;
+import de.hsweingarten.dapro.exceptions.NumberSelectionException;
 import de.hsweingarten.dapro.vo.CarModelVO;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,6 +30,10 @@ public class CarRentalOverviewView implements ICarRentalOverviewView {
     private ComboBox<String> carTypeCmbBox;
     private ComboBox<String> seatsCmbBox;
     private ComboBox<String> fuelCmbBox;
+    private NumberTextField customerTxtField;
+    private DatePicker startDatePicker;
+    private DatePicker endDatePicker;
+    private Button reservationBtn;
 
     @Inject
     public ITranslationProvider translationProvider;
@@ -98,6 +102,20 @@ public class CarRentalOverviewView implements ICarRentalOverviewView {
     }
 
     /**
+     * Shows an Information Dialog with a specified Text
+     *
+     * @param text
+     */
+    @Override
+    public void showInformationDialog(String text) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Reservation Information");
+        alert.setHeaderText(null);
+        alert.setContentText(text);
+        alert.showAndWait();
+    }
+
+    /**
      * Returns a HashMap with Filters for filtering the Car Models
      *
      * @return HashMap with Filters
@@ -111,6 +129,62 @@ public class CarRentalOverviewView implements ICarRentalOverviewView {
         map.put("seats", emptyStringToNull(seatsCmbBox.getValue()));
         map.put("fuel", emptyStringToNull(fuelCmbBox.getValue()));
         return map;
+    }
+
+    /**
+     * Returns the picked Customer ID
+     *
+     * @return
+     */
+    @Override
+    public int getCustomerId() {
+        try {
+            String text = customerTxtField.getText();
+
+            if (text.equals("")) {
+                throw new NumberSelectionException();
+            }
+
+            return Integer.parseInt(customerTxtField.getText());
+        }
+        catch (NumberFormatException exception) {
+            throw new NumberSelectionException();
+        }
+    }
+
+    /**
+     * Returns the ID of the selected Car Model
+     *
+     * @return
+     */
+    @Override
+    public int getSelectedCarModelId() throws ModelSelectionException {
+        CarModelVO selectedModel = carTable.getSelectionModel().getSelectedItem();
+        if (selectedModel != null) {
+            return selectedModel.getId();
+        }
+
+        throw new ModelSelectionException();
+    }
+
+    /**
+     * Returns the picked Start Date
+     *
+     * @return
+     */
+    @Override
+    public LocalDate getStartDate() {
+        return startDatePicker.getValue();
+    }
+
+    /**
+     * Returns the picked End Date
+     *
+     * @return
+     */
+    @Override
+    public LocalDate getEndDate() {
+        return endDatePicker.getValue();
     }
 
     /**
@@ -141,6 +215,16 @@ public class CarRentalOverviewView implements ICarRentalOverviewView {
             bottom.add(seatsLabel, 1, 4);
             bottom.add(fuelLabel, 1, 5);
 
+            Label userLabel = new Label("User");
+            Label startLabel = new Label("Start Date");
+            Label endLabel = new Label("End Date");
+            Label reservationLabel = new Label("Reservation");
+
+            bottom.add(userLabel, 3, 1);
+            bottom.add(startLabel, 3, 2);
+            bottom.add(endLabel, 3, 3);
+            bottom.add(reservationLabel, 3, 4);
+
             ComboBoxChangedHandler comboBoxChangedHandler = new ComboBoxChangedHandler();
             descriptionCmbBox = new ComboBox<>();
             descriptionCmbBox.setOnAction(comboBoxChangedHandler);
@@ -163,6 +247,21 @@ public class CarRentalOverviewView implements ICarRentalOverviewView {
             bottom.add(carTypeCmbBox, 2, 3);
             bottom.add(seatsCmbBox, 2, 4);
             bottom.add(fuelCmbBox, 2, 5);
+
+            customerTxtField = new NumberTextField();
+            customerTxtField.setMinWidth(200);
+            startDatePicker = new DatePicker();
+            startDatePicker.setMinWidth(200);
+            endDatePicker = new DatePicker();
+            endDatePicker.setMinWidth(200);
+            reservationBtn = new Button("Reservation");
+            reservationBtn.setMinWidth(200);
+            reservationBtn.setOnAction(new ButtonChangedHandler());
+
+            bottom.add(customerTxtField, 4, 1);
+            bottom.add(startDatePicker, 4, 2);
+            bottom.add(endDatePicker, 4, 3);
+            bottom.add(reservationBtn, 4, 4);
 
             view.setCenter(carTable);
             view.setBottom(bottom);
@@ -272,6 +371,36 @@ public class CarRentalOverviewView implements ICarRentalOverviewView {
         @Override
         public void handle(ActionEvent event) {
             mediator.updateCarList();
+        }
+    }
+
+    private class ButtonChangedHandler implements EventHandler<ActionEvent> {
+        @Override
+        public void handle(ActionEvent event) {
+            mediator.reserveCar();
+        }
+    }
+
+    /**
+     * Text Field for Numbers only
+     */
+    private class NumberTextField extends TextField {
+        @Override
+        public void replaceText(int start, int end, String text) {
+            if (validate(text)) {
+                super.replaceText(start, end, text);
+            }
+        }
+
+        @Override
+        public void replaceSelection(String text) {
+            if (validate(text)) {
+                super.replaceSelection(text);
+            }
+        }
+
+        private boolean validate(String text) {
+            return ("".equals(text) || text.matches("[0-9]"));
         }
     }
 }

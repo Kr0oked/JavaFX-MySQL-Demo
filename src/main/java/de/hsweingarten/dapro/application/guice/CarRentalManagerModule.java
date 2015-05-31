@@ -5,10 +5,8 @@ import de.hsweingarten.dapro.application.translations.ITranslationProvider;
 import de.hsweingarten.dapro.application.translations.ResourceBundleTranslationProvider;
 import de.hsweingarten.dapro.command.LoadCarsCommand;
 import de.hsweingarten.dapro.command.LoadColumnValuesCommand;
-import de.hsweingarten.dapro.service.DatabaseService;
-import de.hsweingarten.dapro.service.IDatabaseService;
-import de.hsweingarten.dapro.service.IMySQLService;
-import de.hsweingarten.dapro.service.MySQLService;
+import de.hsweingarten.dapro.command.ReserveCommand;
+import de.hsweingarten.dapro.service.*;
 import de.hsweingarten.dapro.view.overview.CarRentalOverviewMediator;
 import de.hsweingarten.dapro.view.overview.CarRentalOverviewView;
 import de.hsweingarten.dapro.view.overview.ICarRentalOverviewMediator;
@@ -57,6 +55,7 @@ public class CarRentalManagerModule extends AbstractModule {
 
         bind(LoadCarsCommand.class);
         bind(LoadColumnValuesCommand.class);
+        bind(ReserveCommand.class);
     }
 
     /**
@@ -64,7 +63,7 @@ public class CarRentalManagerModule extends AbstractModule {
      */
     private void mapServices() {
         bind(IDatabaseService.class).to(DatabaseService.class);
-        bind(IMySQLService.class).to(MySQLService.class).in(Singleton.class);
+        bind(IHibernateService.class).to(HibernateService.class).in(Singleton.class);
     }
 
     /**

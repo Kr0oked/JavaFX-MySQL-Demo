@@ -2,6 +2,7 @@ package de.hsweingarten.dapro.service;
 
 import de.hsweingarten.dapro.vo.CarModelVO;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -24,4 +25,15 @@ public interface IDatabaseService {
      * @return filtered List of Car Models
      */
     Collection<CarModelVO> getCarList(HashMap<String, String> filters);
+
+    /**
+     * Reserves a Car and returns a Status Message
+     *
+     * @param customerId
+     * @param carModelId
+     * @param startDate
+     * @param endDate
+     * @return Status Message
+     */
+    String reserveCar(int customerId, int carModelId, LocalDate startDate, LocalDate endDate);
 }

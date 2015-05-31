@@ -14,4 +14,9 @@ public interface ICarRentalOverviewMediator {
      * Updates the Car List with filters provided from the View
      */
     void updateCarList();
+
+    /**
+     * Reserves a Car with the values provided from the View
+     */
+    void reserveCar();
 }

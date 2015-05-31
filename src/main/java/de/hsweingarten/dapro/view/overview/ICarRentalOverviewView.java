@@ -2,6 +2,7 @@ package de.hsweingarten.dapro.view.overview;
 
 import de.hsweingarten.dapro.vo.CarModelVO;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -50,9 +51,44 @@ public interface ICarRentalOverviewView {
     void updateFuelValuesList(Collection<String> fuels);
 
     /**
+     * Shows an Information Dialog with a specified Text
+     *
+     * @param text
+     */
+    void showInformationDialog(String text);
+
+    /**
      * Returns a HashMap with Filters for filtering the Car Models
      *
      * @return HashMap with Filters
      */
     HashMap<String, String> getFilters();
+
+    /**
+     * Returns the picked Customer ID
+     *
+     * @return
+     */
+    int getCustomerId();
+
+    /**
+     * Returns the ID of the selected Car Model
+     *
+     * @return
+     */
+    int getSelectedCarModelId();
+
+    /**
+     * Returns the picked Start Date
+     *
+     * @return
+     */
+    LocalDate getStartDate();
+
+    /**
+     * Returns the picked End Date
+     *
+     * @return
+     */
+    LocalDate getEndDate();
 }

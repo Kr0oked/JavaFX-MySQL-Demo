@@ -4,11 +4,15 @@ import com.google.inject.Inject;
 import de.hsweingarten.dapro.application.guice.ICommandProvider;
 import de.hsweingarten.dapro.command.LoadCarsCommand;
 import de.hsweingarten.dapro.command.LoadColumnValuesCommand;
+import de.hsweingarten.dapro.command.ReserveCommand;
+import de.hsweingarten.dapro.exceptions.ModelSelectionException;
+import de.hsweingarten.dapro.exceptions.NumberSelectionException;
 import de.hsweingarten.dapro.vo.CarModelVO;
 import javafx.collections.ObservableList;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +45,37 @@ public class CarRentalOverviewMediator implements ICarRentalOverviewMediator {
         command.setOnSucceeded(new LoadCarsSucceededHandler());
         command.filters = view.getFilters();
         command.start();
+    }
+
+    /**
+     * Reserves a Car with the values provided from the View
+     */
+    @Override
+    public void reserveCar() {
+        try {
+            ReserveCommand command = commandProvider.get(ReserveCommand.class);
+            command.setOnSucceeded(new ReserveSucceededHandler());
+            command.customerId = view.getCustomerId();
+            command.carModelId = view.getSelectedCarModelId();
+
+            LocalDate startDate = view.getStartDate();
+            LocalDate endDate = view.getEndDate();
+
+            if (startDate == null || endDate == null || startDate.isAfter(endDate)) {
+                view.showInformationDialog("Invalid Date Input");
+            }
+            else {
+                command.startDate = startDate;
+                command.endDate = endDate;
+                command.start();
+            }
+        }
+        catch (ModelSelectionException exception) {
+            view.showInformationDialog(exception.getMessage());
+        }
+        catch (NumberSelectionException exception) {
+            view.showInformationDialog(exception.getMessage());
+        }
     }
 
     /**
@@ -78,6 +113,13 @@ public class CarRentalOverviewMediator implements ICarRentalOverviewMediator {
         @Override
         public void handle(WorkerStateEvent event) {
             view.updateCarList((Collection<CarModelVO>) event.getSource().getValue());
+        }
+    }
+
+    private class ReserveSucceededHandler implements EventHandler<WorkerStateEvent> {
+        @Override
+        public void handle(WorkerStateEvent event) {
+            view.showInformationDialog((String) event.getSource().getValue());
         }
     }
 }

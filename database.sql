@@ -3,46 +3,18 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 07. Apr 2015 um 02:43
+-- Erstellungszeit: 12. Mai 2015 um 22:12
 -- Server Version: 5.6.19-0ubuntu0.14.04.1
--- PHP-Version: 5.5.9-1ubuntu4.7
+-- PHP-Version: 5.5.9-1ubuntu4.9
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-
 --
--- Datenbank: `dapro`
+-- Datenbank: `car_rental`
 --
 CREATE DATABASE IF NOT EXISTS `car_rental` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 USE `car_rental`;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `features`
---
-
-CREATE TABLE IF NOT EXISTS `features` (
-  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `description` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=5 ;
-
---
--- Daten für Tabelle `features`
---
-
-INSERT INTO `features` (`ID`, `description`) VALUES
-(1, 'air conditioning'),
-(2, 'coupling device'),
-(3, 'navigation system'),
-(4, 'cruise control');
 
 -- --------------------------------------------------------
 
@@ -54,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `car` (
   `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `license_plate_number` char(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `mileage` int(11) DEFAULT NULL,
-  `supvervision` date DEFAULT NULL,
+  `supervision` date DEFAULT NULL,
   `purchase` date DEFAULT NULL,
   `car_model_id` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`ID`),
@@ -66,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `car` (
 -- Daten für Tabelle `car`
 --
 
-INSERT INTO `car` (`ID`, `license_plate_number`, `mileage`, `supvervision`, `purchase`, `car_model_id`) VALUES
+INSERT INTO `car` (`ID`, `license_plate_number`, `mileage`, `supervision`, `purchase`, `car_model_id`) VALUES
 (1, 'RV AB 335', 45000, '2001-05-20', '2001-05-20', 3),
 (2, 'RV AB 336', 39000, '2001-05-20', '2001-05-20', 3),
 (3, 'RV AB 337', 41000, '2001-05-20', '2001-05-20', 3),
@@ -81,32 +53,6 @@ INSERT INTO `car` (`ID`, `license_plate_number`, `mileage`, `supvervision`, `pur
 (12, 'RV C 45', 150000, '2001-04-20', '2001-04-20', 6),
 (13, 'RV MM 999', 16000, '2001-04-20', '2001-04-20', 5),
 (14, 'RV PF 23', 25000, '2001-04-20', '2001-04-20', 7);
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `car_type`
---
-
-CREATE TABLE IF NOT EXISTS `car_type` (
-  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `type` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`ID`),
-  UNIQUE KEY `type` (`type`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=8 ;
-
---
--- Daten für Tabelle `car_type`
---
-
-INSERT INTO `car_type` (`ID`, `type`) VALUES
-(3, 'convertible'),
-(5, 'minibus'),
-(2, 'estate'),
-(1, 'limousine'),
-(6, 'truck'),
-(7, 'pickup truck'),
-(4, 'van');
 
 -- --------------------------------------------------------
 
@@ -148,32 +94,28 @@ INSERT INTO `car_model` (`ID`, `description`, `manufacturer`, `car_type_id`, `se
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `driver_license`
+-- Tabellenstruktur für Tabelle `car_type`
 --
 
-CREATE TABLE IF NOT EXISTS `driver_license` (
-  `customer_id` int(10) unsigned DEFAULT NULL,
-  `class` char(2) COLLATE utf8_unicode_ci DEFAULT NULL,
-  KEY `fk_dl_customer_id` (`customer_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `customer`
---
-
-CREATE TABLE IF NOT EXISTS `customer` (
+CREATE TABLE IF NOT EXISTS `car_type` (
   `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `forename` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `surename` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `postcode` char(5) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `city` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `street` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `email` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `phone_number` char(18) COLLATE utf8_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+  `type` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `type` (`type`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=8 ;
+
+--
+-- Daten für Tabelle `car_type`
+--
+
+INSERT INTO `car_type` (`ID`, `type`) VALUES
+(3, 'convertible'),
+(2, 'estate'),
+(1, 'limousine'),
+(5, 'minibus'),
+(7, 'pickup truck'),
+(6, 'truck'),
+(4, 'van');
 
 -- --------------------------------------------------------
 
@@ -187,8 +129,8 @@ CREATE TABLE IF NOT EXISTS `commodate` (
   `car_id` int(10) unsigned DEFAULT NULL,
   `start` datetime DEFAULT NULL,
   `end` datetime DEFAULT NULL,
-  `start_milage` int(11) DEFAULT NULL,
-  `end_milage` int(11) DEFAULT NULL,
+  `start_mileage` int(11) DEFAULT NULL,
+  `end_mileage` int(11) DEFAULT NULL,
   `price` float(6,2) DEFAULT NULL,
   `payed` char(1) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`ID`),
@@ -199,28 +141,100 @@ CREATE TABLE IF NOT EXISTS `commodate` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `customer`
+--
+
+CREATE TABLE IF NOT EXISTS `customer` (
+  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `driver_license_id` int(10) NOT NULL,
+  `forename` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `surename` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `postcode` char(5) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `city` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `street` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(30) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `phone_number` char(18) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `driver_license_id` (`driver_license_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=3 ;
+
+--
+-- Daten für Tabelle `customer`
+--
+
+INSERT INTO `customer` (`ID`, `driver_license_id`, `forename`, `surename`, `postcode`, `city`, `street`, `email`, `phone_number`) VALUES
+(1, 1, 'Bob', 'Johnson', '10178', 'Berlin', 'Torstraße', 'bob.johnson@email.com', '+4915112345678'),
+(2, 1, 'Alice', 'Marrisen', '70173', 'Stuttgart', 'Dobelstraße', 'alice.marrisen@email.com', '+4915123456789');
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `driver_license`
+--
+
+CREATE TABLE IF NOT EXISTS `driver_license` (
+  `ID` int(10) NOT NULL AUTO_INCREMENT,
+  `class` char(2) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=3 ;
+
+--
+-- Daten für Tabelle `driver_license`
+--
+
+INSERT INTO `driver_license` (`ID`, `class`) VALUES
+(1, 'B'),
+(2, 'B');
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `features`
+--
+
+CREATE TABLE IF NOT EXISTS `features` (
+  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `description` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=5 ;
+
+--
+-- Daten für Tabelle `features`
+--
+
+INSERT INTO `features` (`ID`, `description`) VALUES
+(1, 'air conditioning'),
+(2, 'coupling device'),
+(3, 'navigation system'),
+(4, 'cruise control');
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `link_car_type_features`
 --
 
 CREATE TABLE IF NOT EXISTS `link_car_type_features` (
+  `ID` int(10) NOT NULL AUTO_INCREMENT,
   `car_type_id` int(10) unsigned DEFAULT NULL,
   `features_id` int(10) unsigned DEFAULT NULL,
+  PRIMARY KEY (`ID`),
   KEY `fk_ctf_car_type` (`car_type_id`),
   KEY `fk_ctf_features` (`features_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=8 ;
 
 --
 -- Daten für Tabelle `link_car_type_features`
 --
 
-INSERT INTO `link_car_type_features` (`car_type_id`, `features_id`) VALUES
-(1, 1),
-(2, 2),
-(5, 1),
-(5, 3),
-(5, 4),
-(7, 1),
-(7, 2);
+INSERT INTO `link_car_type_features` (`ID`, `car_type_id`, `features_id`) VALUES
+(1, 1, 1),
+(2, 2, 2),
+(3, 5, 1),
+(4, 5, 3),
+(5, 5, 4),
+(6, 7, 1),
+(7, 7, 2);
 
 -- --------------------------------------------------------
 
@@ -256,12 +270,6 @@ ALTER TABLE `car_model`
   ADD CONSTRAINT `fk_cm_car_type` FOREIGN KEY (`car_type_id`) REFERENCES `car_type` (`ID`);
 
 --
--- Constraints der Tabelle `driver_license`
---
-ALTER TABLE `driver_license`
-  ADD CONSTRAINT `fk_dl_customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`ID`);
-
---
 -- Constraints der Tabelle `commodate`
 --
 ALTER TABLE `commodate`
@@ -269,19 +277,21 @@ ALTER TABLE `commodate`
   ADD CONSTRAINT `fk_c_customer` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`ID`);
 
 --
+-- Constraints der Tabelle `customer`
+--
+ALTER TABLE `customer`
+  ADD CONSTRAINT `fk_c_driver_license` FOREIGN KEY (`driver_license_id`) REFERENCES `driver_license` (`ID`);
+
+--
 -- Constraints der Tabelle `link_car_type_features`
 --
 ALTER TABLE `link_car_type_features`
-  ADD CONSTRAINT `fk_ctf_features` FOREIGN KEY (`features_id`) REFERENCES `features` (`ID`),
-  ADD CONSTRAINT `fk_ctf_car_type` FOREIGN KEY (`car_type_id`) REFERENCES `car_type` (`ID`);
+  ADD CONSTRAINT `fk_ctf_car_type` FOREIGN KEY (`car_type_id`) REFERENCES `car_type` (`ID`),
+  ADD CONSTRAINT `fk_ctf_features` FOREIGN KEY (`features_id`) REFERENCES `features` (`ID`);
 
 --
 -- Constraints der Tabelle `reservation`
 --
 ALTER TABLE `reservation`
-  ADD CONSTRAINT `fk_r_customer` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`ID`),
-  ADD CONSTRAINT `fk_r_car_model` FOREIGN KEY (`car_model_id`) REFERENCES `car_model` (`ID`);
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+  ADD CONSTRAINT `fk_r_car_model` FOREIGN KEY (`car_model_id`) REFERENCES `car_model` (`ID`),
+  ADD CONSTRAINT `fk_r_customer` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`ID`);
